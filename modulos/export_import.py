@@ -1,6 +1,7 @@
 import json
 from cryptography.fernet import Fernet
 import logging
+import tkinter as tk  # Adicionada a importação do tkinter como tk
 from tkinter import filedialog, messagebox
 
 def exportar_arquivo(janela, lista_senhas):

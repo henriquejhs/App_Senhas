@@ -4,7 +4,7 @@ import pyperclip
 import logging
 
 def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arquivo, importar_arquivo):
-    janela.title("Gerenciador de Senhas Simples")
+    janela.title("Gerenciador de senhas - José Henrique")
     janela.geometry("600x500")
     janela.fernet = fernet
 
@@ -12,7 +12,7 @@ def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arq
     frame_topo = tk.Frame(janela)
     frame_topo.pack(fill=tk.X, pady=5)
 
-    tk.Label(frame_topo, text="Gerenciador de Senhas Simples", font=("Arial", 14, "bold")).pack(side=tk.LEFT, padx=5)
+    tk.Label(frame_topo, text="Gerenciador de senhas - José Henrique", font=("Arial", 14, "bold")).pack(side=tk.LEFT, padx=5)
     tk.Label(frame_topo, text="Pesquisar (Descrição ou IP/Link):").pack(side=tk.LEFT, padx=5)
     entrada_pesquisa = tk.Entry(frame_topo)
     entrada_pesquisa.pack(side=tk.LEFT, padx=5)
@@ -37,8 +37,8 @@ def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arq
 
     tk.Button(frame_botoes_lista, text="Exportar", command=lambda: exportar_arquivo(janela, lista_senhas)).pack(side=tk.LEFT, padx=5)
     tk.Button(frame_botoes_lista, text="Importar", command=lambda: importar_arquivo(janela, lambda: filtrar_lista(entrada_pesquisa))).pack(side=tk.LEFT, padx=5)
-    tk.Button(frame_botoes_lista, text="Editar", command=lambda: editar_dados(janela, lista_senhas, filtrar_lista)).pack(side=tk.LEFT, padx=5)
-    tk.Button(frame_botoes_lista, text="Eliminar", command=lambda: eliminar_dado(janela, lista_senhas, filtrar_lista)).pack(side=tk.LEFT, padx=5)
+    tk.Button(frame_botoes_lista, text="Editar", command=lambda: editar_dados(janela, lista_senhas, lambda: filtrar_lista(entrada_pesquisa))).pack(side=tk.LEFT, padx=5)
+    tk.Button(frame_botoes_lista, text="Eliminar", command=lambda: eliminar_dado(janela, lista_senhas, lambda: filtrar_lista(entrada_pesquisa))).pack(side=tk.LEFT, padx=5)
 
     # Frame para exibição dos dados (direita)
     frame_dados = tk.Frame(frame_principal)
@@ -90,11 +90,11 @@ def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arq
     entrada_ip_link.grid(row=2, column=3, padx=5)
 
     # Botão "Salvar Novos Dados" na coluna 0 a 3
-    tk.Button(frame_entrada, text="Salvar Novos Dados", command=lambda: adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_senha, entrada_ip_link, filtrar_lista)).grid(row=3, column=0, columnspan=4, pady=10)
+    tk.Button(frame_entrada, text="Salvar Novos Dados", command=lambda: adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_senha, entrada_ip_link, entrada_pesquisa)).grid(row=3, column=0, columnspan=4, pady=10)
 
     # Botão "Encerrar" no canto direito, mesma linha do "Salvar Novos Dados"
-    btn_encerrar = tk.Button(frame_entrada, text="Encerrar", command=lambda: encerrar_app(janela), bg="red", fg="white")
-    btn_encerrar.grid(row=3, column=5, padx=(20, 5), pady=10, sticky="e")  # Coluna 5 para ficar à direita, com padding à esquerda
+    btn_encerrar = tk.Button(frame_entrada, text="Encerrar", command=lambda: [logging.info("Botão Encerrar clicado."), encerrar_app(janela)], bg="red", fg="white")
+    btn_encerrar.grid(row=3, column=5, padx=(20, 5), pady=10, sticky="e")
 
     # Funções auxiliares
     def mostrar_dados(event):
@@ -147,7 +147,7 @@ def limpar_dados(descricao_atual, usuario_atual, senha_atual, ip_link_atual, lis
     lista_senhas.selection_clear(0, tk.END)
     logging.info("Dados exibidos limpos.")
 
-def adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_senha, entrada_ip_link, filtrar_lista):
+def adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_senha, entrada_ip_link, entrada_pesquisa):
     descricao = entrada_descricao.get()
     usuario = entrada_usuario.get()
     senha = entrada_senha.get()
@@ -162,7 +162,7 @@ def adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_se
         entrada_senha.delete(0, tk.END)
         entrada_ip_link.delete(0, tk.END)
         messagebox.showinfo("Sucesso", "Dados adicionados com sucesso!")
-        filtrar_lista()
+        filtrar_lista(entrada_pesquisa)
         logging.info(f"Novos dados adicionados: {descricao}")
     else:
         messagebox.showwarning("Erro", "A descrição é obrigatória!")
@@ -257,5 +257,10 @@ def editar_dados(janela, lista_senhas, filtrar_lista):
     tk.Button(janela_editar, text="Salvar Alterações", command=salvar_alteracoes).grid(row=4, column=0, columnspan=2, pady=10)
 
 def encerrar_app(janela):
-    logging.info("Aplicação encerrada.")
-    janela.destroy()
+    try:
+        logging.info("Tentando encerrar a aplicação.")
+        janela.destroy()
+        logging.info("Aplicação encerrada com sucesso.")
+    except Exception as e:
+        logging.error(f"Falha ao encerrar a aplicação: {str(e)}")
+        messagebox.showerror("Erro", f"Falha ao encerrar a aplicação: {str(e)}")
