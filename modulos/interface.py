@@ -67,10 +67,6 @@ def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arq
     btn_limpar = tk.Button(frame_dados, text="Limpar Dados", command=lambda: limpar_dados(descricao_atual, usuario_atual, senha_atual, ip_link_atual, lista_senhas))
     btn_limpar.grid(row=4, column=0, columnspan=3, pady=10)
 
-    # Botão Encerrar (vermelho com letras brancas, 2cm abaixo do botão "Limpar Dados")
-    btn_encerrar = tk.Button(janela, text="Encerrar", command=lambda: encerrar_app(janela), bg="red", fg="white")
-    btn_encerrar.pack(pady=(20, 5))  # 20 pixels = aproximadamente 2cm
-
     # Frame para adicionar novos dados (inferior)
     frame_entrada = tk.Frame(janela)
     frame_entrada.pack(fill=tk.X, pady=10)
@@ -93,7 +89,12 @@ def criar_interface(janela, fernet, atualizar_lista, filtrar_lista, exportar_arq
     entrada_ip_link = tk.Entry(frame_entrada)
     entrada_ip_link.grid(row=2, column=3, padx=5)
 
+    # Botão "Salvar Novos Dados" na coluna 0 a 3
     tk.Button(frame_entrada, text="Salvar Novos Dados", command=lambda: adicionar_novos_dados(janela, entrada_descricao, entrada_usuario, entrada_senha, entrada_ip_link, filtrar_lista)).grid(row=3, column=0, columnspan=4, pady=10)
+
+    # Botão "Encerrar" no canto direito, mesma linha do "Salvar Novos Dados"
+    btn_encerrar = tk.Button(frame_entrada, text="Encerrar", command=lambda: encerrar_app(janela), bg="red", fg="white")
+    btn_encerrar.grid(row=3, column=5, padx=(20, 5), pady=10, sticky="e")  # Coluna 5 para ficar à direita, com padding à esquerda
 
     # Funções auxiliares
     def mostrar_dados(event):
